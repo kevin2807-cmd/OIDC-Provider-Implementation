@@ -14,13 +14,15 @@ app.secret_key = os.getenv("SECRET_KEY", "fallback_secret_key")
 oauth = OAuth(app)
 
 # Register the OIDC Provider dynamically using the Discovery URL
+# Register the OIDC Provider dynamically using the Discovery URL
 oauth.register(
     name='oidc_provider',
     client_id=os.getenv('OIDC_CLIENT_ID'),
     client_secret=os.getenv('OIDC_CLIENT_SECRET'),
     server_metadata_url=os.getenv('OIDC_DISCOVERY_URL'),
     client_kwargs={
-        'scope': 'openid profile email'
+        'scope': 'openid profile email offline',
+        'token_endpoint_auth_method': 'client_secret_post'  # <--- ADD THIS LINE
     }
 )
 
