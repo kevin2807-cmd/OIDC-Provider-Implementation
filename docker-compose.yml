@@ -1,9 +1,6 @@
-version: '3.8'
+version: "3.8"
 
 services:
-  # ==========================================
-  # KEYCLOAK INFRASTRUCTURE
-  # ==========================================
   keycloak-db:
     image: postgres:15
     environment:
@@ -32,9 +29,6 @@ services:
     networks:
       - oidc-net
 
-  # ==========================================
-  # ORY HYDRA INFRASTRUCTURE
-  # ==========================================
   hydra-db:
     image: postgres:15
     environment:
@@ -59,8 +53,8 @@ services:
   hydra:
     image: oryd/hydra:v2.2.0
     ports:
-      - "4444:4444" 
-      - "4445:4445" 
+      - "4444:4444"
+      - "4445:4445"
     environment:
       - DSN=postgres://${POSTGRES_USER}:${POSTGRES_PASSWORD}@hydra-db:5432/hydra?sslmode=disable
       - URLS_SELF_ISSUER=http://127.0.0.1:4444/
@@ -89,9 +83,6 @@ services:
     networks:
       - oidc-net
 
-  # ==========================================
-  # LDAP INFRASTRUCTURE
-  # ==========================================
   openldap:
     image: osixia/openldap:1.5.0
     ports:
