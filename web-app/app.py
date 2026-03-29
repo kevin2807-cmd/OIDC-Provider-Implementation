@@ -39,17 +39,16 @@ def login():
 
 @app.route('/callback')
 def callback():
-    # Requirement B: Receive and parse the ID Token (JWT)
     token = oauth.oidc_provider.authorize_access_token()
     
-    # Authlib automatically parses the ID Token and stores it in 'userinfo'
     user_info = token.get('userinfo')
     raw_access_token = token.get('access_token')
     
-    # Store the parsed JWT claims in the Flask session
     if user_info:
         session['user'] = user_info
         session['raw_access_token'] = raw_access_token
+        # ---> ADD THIS LINE <---
+        session['id_token'] = token.get('id_token') 
         
     return redirect(url_for('profile'))
 
@@ -69,7 +68,25 @@ def profile():
 
 @app.route('/logout')
 def logout():
-    session.pop('user', None)
+    # 1. Grab the ID token before we destroy the session
+    id_token = session.get('id_token')
+    
+    # 2. Destroy the local Flask session
+    session.clear() 
+
+    # 3. Fetch the Provider's dynamic logout URL
+    metadata = oauth.oidc_provider.load_server_metadata()
+    end_session_endpoint = metadata.get('end_session_endpoint')
+
+    if end_session_endpoint:
+        # Build the URL with Keycloak's required security parameters
+        redirect_to = f"{end_session_endpoint}?post_logout_redirect_uri={url_for('index', _external=True)}"
+        if id_token:
+            redirect_to += f"&id_token_hint={id_token}"
+            
+        return redirect(redirect_to)
+        
+    # Fallback
     return redirect(url_for('index'))
 
 if __name__ == '__main__':
