@@ -44,22 +44,28 @@ def callback():
     
     # Authlib automatically parses the ID Token and stores it in 'userinfo'
     user_info = token.get('userinfo')
+    raw_access_token = token.get('access_token')
     
     # Store the parsed JWT claims in the Flask session
     if user_info:
         session['user'] = user_info
+        session['raw_access_token'] = raw_access_token
         
     return redirect(url_for('profile'))
 
 @app.route('/profile')
 def profile():
     user = session.get('user')
+    raw_access_token = session.get('raw_access_token')
     if not user:
         return redirect(url_for('index'))
     
     # Requirement C: Display user information on a Profile page
     # Passing the user dictionary to the template to render
-    return render_template('profile.html', user=user, raw_json=json.dumps(user, indent=4))
+    return render_template('profile.html', 
+                           user=user, 
+                           raw_json=json.dumps(user, indent=4),
+                           raw_access_token=raw_access_token)
 
 @app.route('/logout')
 def logout():

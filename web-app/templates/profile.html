@@ -1,29 +1,54 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="en">
-<head>
-    <meta charset="UTF-8">
+  <head>
+    <meta charset="UTF-8" />
     <title>User Profile</title>
     <style>
-        body { font-family: sans-serif; padding: 40px; }
-        .profile-card { border: 1px solid #ccc; padding: 20px; border-radius: 5px; max-width: 600px; }
-        pre { background: #eee; padding: 15px; border-radius: 5px; overflow-x: auto; }
-        .btn { padding: 8px 15px; background: #dc3545; color: white; text-decoration: none; border-radius: 5px; }
+      body {
+        font-family: sans-serif;
+        padding: 40px;
+      }
+      .profile-card {
+        border: 1px solid #ccc;
+        padding: 20px;
+        border-radius: 5px;
+        max-width: 600px;
+      }
+      pre {
+        background: #eee;
+        padding: 15px;
+        border-radius: 5px;
+        overflow-x: auto;
+      }
+      .btn {
+        padding: 8px 15px;
+        background: #dc3545;
+        color: white;
+        text-decoration: none;
+        border-radius: 5px;
+      }
     </style>
-</head>
-<body>
+  </head>
+  <body>
     <div class="profile-card">
-        <h2>Profile Page</h2>
-        
-        <!-- Requirement C: Display the user's information extracted from the JWT -->
-        <p><strong>Subject (ID):</strong> {{ user.sub }}</p>
-        <p><strong>Username/Name:</strong> {{ user.preferred_username or user.name or 'N/A' }}</p>
-        <p><strong>Email:</strong> {{ user.email or 'N/A' }}</p>
-        
-        <h3>Parsed ID Token (JWT) Payload:</h3>
-        <pre><code>{{ raw_json }}</code></pre>
-        
-        <br>
-        <a href="/logout" class="btn">Log Out</a>
+      <h2>Profile Page</h2>
+
+      <!-- Requirement C: Display the user's information extracted from the JWT -->
+      <p><strong>Subject (ID):</strong> {{ user.sub }}</p>
+      <p>
+        <strong>Username/Name:</strong> {{ user.preferred_username or user.name
+        or 'N/A' }}
+      </p>
+      <p><strong>Email:</strong> {{ user.email or 'N/A' }}</p>
+
+      <h3>Parsed ID Token (JWT) Payload:</h3>
+      <pre><code>{{ raw_json }}</code></pre>
+
+      <h3>Raw Access Token (JWT)</h3>
+      <pre><code>{{ raw_access_token }}</code></pre>
+
+      <br />
+      <a href="/logout" class="btn">Log Out</a>
     </div>
-</body>
+  </body>
 </html>
