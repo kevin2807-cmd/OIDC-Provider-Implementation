@@ -32,10 +32,13 @@ This repository contains a complete local infrastructure for testing OpenID Conn
     ```bash
     docker compose up -d
     ```
+    > 📸 **TAKE A SCREENSHOT HERE:** Take a picture of your terminal showing Docker successfully pulling and creating the containers.
+
 4.  Verify all containers are running successfully:
     ```bash
     docker compose ps
     ```
+    > 📸 **TAKE A SCREENSHOT HERE:** Take a picture of the terminal output showing all containers (Keycloak, Hydra, Postgres, LDAP) in an "Up" or "Running" state.
 
 ---
 
@@ -46,6 +49,7 @@ This repository contains a complete local infrastructure for testing OpenID Conn
 1.  Access the Keycloak Admin Console at http://localhost:8080.
 2.  Log in using the `KEYCLOAK_ADMIN` and `KEYCLOAK_ADMIN_PASSWORD` from your root `.env` file.
 3.  **Create a Realm:** Click the top-left dropdown (currently "master") -> **Create Realm** -> Name it `demo-realm` -> Click **Create**.
+    > 📸 **TAKE A SCREENSHOT HERE:** Take a picture of the Realm creation screen.
 4.  **Create a Client:** 
     *   Go to **Clients** -> **Create client**.
     *   Client ID: `web-app`.
@@ -53,8 +57,11 @@ This repository contains a complete local infrastructure for testing OpenID Conn
     *   Toggle **Client authentication** to **ON**.
     *   Set **Valid redirect URIs** to `http://127.0.0.1:5173/callback`.
     *   Click **Save**.
+    > 📸 **TAKE A SCREENSHOT HERE:** Take a picture of the Client settings showing the Redirect URI and Client Authentication toggled ON.
 5.  **Get Client Secret:** Go to the **Credentials** tab of your new `web-app` client and copy the **Client Secret**.
+    > 📸 **TAKE A SCREENSHOT HERE:** Take a picture of the Credentials tab showing the generated secret.
 6.  **Create a User:** Go to **Users** -> **Add user** -> Set a username (e.g., `testuser`) -> **Create**. Go to the **Credentials** tab, click **Set password**, uncheck "Temporary", and save.
+    > 📸 **TAKE A SCREENSHOT HERE:** Take a picture of the User list showing your newly created test user.
 
 ### Option B: Ory Hydra Setup
 
@@ -69,6 +76,7 @@ This repository contains a complete local infrastructure for testing OpenID Conn
         --redirect-uri [http://127.0.0.1:5173/callback](http://127.0.0.1:5173/callback)
     ```
 2.  The terminal will output a **Client ID** and a **Client Secret**. Copy these immediately.
+    > 📸 **TAKE A SCREENSHOT HERE:** Take a picture of the terminal showing the successful Hydra Client creation and the generated credentials.
 
 ---
 
@@ -112,7 +120,11 @@ This repository contains a complete local infrastructure for testing OpenID Conn
     ```bash
     python app.py
     ```
-6.  Navigate to http://127.0.0.1:5173 to test the login.
+    > 📸 **TAKE A SCREENSHOT HERE:** Take a picture of the terminal showing the Flask development server running on port 5173.
+6.  Navigate to http://127.0.0.1:5173 in your browser.
+    > 📸 **TAKE A SCREENSHOT HERE:** Take a picture of the minimalist "Login with OIDC" homepage (Requirement A).
+7.  Click Login, authenticate with Keycloak or Hydra, and you will be redirected to the Profile page.
+    > 📸 **TAKE A SCREENSHOT HERE:** Take a picture of the final Profile page showing the extracted user info and the raw JSON parsed ID Token (Requirements B & C).
 
 ---
 
