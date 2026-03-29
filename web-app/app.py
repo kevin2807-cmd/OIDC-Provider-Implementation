@@ -21,7 +21,7 @@ oauth.register(
     client_secret=os.getenv('OIDC_CLIENT_SECRET'),
     server_metadata_url=os.getenv('OIDC_DISCOVERY_URL'),
     client_kwargs={
-        'scope': 'openid profile email offline_access',
+        'scope': 'openid profile email',
         'token_endpoint_auth_method': 'client_secret_post'  # <--- ADD THIS LINE
     }
 )

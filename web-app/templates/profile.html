@@ -27,6 +27,28 @@
         text-decoration: none;
         border-radius: 5px;
       }
+      textarea {
+        width: 100%; /* Memenuhi lebar container */
+        box-sizing: border-box; /* Agar padding tidak menambah lebar */
+        padding: 15px;
+        border: 1px solid #ccc;
+        border-radius: 5px;
+        background-color: #f8f9fa;
+        font-family:
+          "Courier New", Courier, monospace; /* Font khusus kode/token */
+        font-size: 14px;
+        color: #333;
+        resize: vertical; /* Hanya bisa diperbesar ke bawah, tidak ke samping */
+        word-break: break-all; /* Memaksa string JWT yang panjang untuk turun ke baris baru */
+        line-height: 1.5;
+      }
+
+      /* Efek saat textarea diklik */
+      textarea:focus {
+        outline: none;
+        border-color: #007bff;
+        box-shadow: 0 0 5px rgba(0, 123, 255, 0.3);
+      }
     </style>
   </head>
   <body>
@@ -41,12 +63,13 @@
       </p>
       <p><strong>Email:</strong> {{ user.email or 'N/A' }}</p>
 
-      <h3>Parsed ID Token (JWT) Payload:</h3>
+      <h3>Parsed ID Token Payload:</h3>
       <pre><code>{{ raw_json }}</code></pre>
 
-      <h3>Raw Access Token (JWT)</h3>
-      <pre><code>{{ raw_access_token }}</code></pre>
+      <h3>Access Token</h3>
+      <textarea rows="20" cols="80">{{ raw_access_token }}</textarea>
 
+      <br />
       <br />
       <a href="/logout" class="btn">Log Out</a>
     </div>
