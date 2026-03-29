@@ -1,0 +1,109 @@
+version: '3.8'
+
+services:
+  # ==========================================
+  # KEYCLOAK INFRASTRUCTURE
+  # ==========================================
+  keycloak-db:
+    image: postgres:15
+    environment:
+      POSTGRES_DB: keycloak
+      POSTGRES_USER: ${POSTGRES_USER}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
+    ports:
+      - "5432:5432"
+    networks:
+      - oidc-net
+
+  keycloak:
+    image: quay.io/keycloak/keycloak:24.0
+    command: start-dev
+    environment:
+      KC_DB: postgres
+      KC_DB_URL: jdbc:postgresql://keycloak-db:5432/keycloak
+      KC_DB_USERNAME: ${POSTGRES_USER}
+      KC_DB_PASSWORD: ${POSTGRES_PASSWORD}
+      KEYCLOAK_ADMIN: ${KEYCLOAK_ADMIN}
+      KEYCLOAK_ADMIN_PASSWORD: ${KEYCLOAK_ADMIN_PASSWORD}
+    ports:
+      - "8080:8080"
+    depends_on:
+      - keycloak-db
+    networks:
+      - oidc-net
+
+  # ==========================================
+  # ORY HYDRA INFRASTRUCTURE
+  # ==========================================
+  hydra-db:
+    image: postgres:15
+    environment:
+      POSTGRES_DB: hydra
+      POSTGRES_USER: ${POSTGRES_USER}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
+    ports:
+      - "5433:5432"
+    networks:
+      - oidc-net
+
+  hydra-migrate:
+    image: oryd/hydra:v2.2.0
+    environment:
+      - DSN=postgres://${POSTGRES_USER}:${POSTGRES_PASSWORD}@hydra-db:5432/hydra?sslmode=disable
+    command: migrate sql -e --yes
+    depends_on:
+      - hydra-db
+    networks:
+      - oidc-net
+
+  hydra:
+    image: oryd/hydra:v2.2.0
+    ports:
+      - "4444:4444" 
+      - "4445:4445" 
+    environment:
+      - DSN=postgres://${POSTGRES_USER}:${POSTGRES_PASSWORD}@hydra-db:5432/hydra?sslmode=disable
+      - URLS_SELF_ISSUER=http://127.0.0.1:4444/
+      - URLS_CONSENT=http://127.0.0.1:3000/consent
+      - URLS_LOGIN=http://127.0.0.1:3000/login
+      - SECRETS_SYSTEM=${HYDRA_SYSTEM_SECRET}
+      - SECRETS_COOKIE=${HYDRA_COOKIE_SECRET}
+      - OIDC_SUBJECT_IDENTIFIERS_SUPPORTED_TYPES=public,pairwise
+      - OIDC_SUBJECT_IDENTIFIERS_PAIRWISE_SALT=A_VERY_LONG_SALT_REPLACE_ME_LATER
+      - SERVE_PUBLIC_CORS_ENABLED=true
+      - SERVE_ADMIN_CORS_ENABLED=true
+    command: serve all --dev
+    depends_on:
+      hydra-migrate:
+        condition: service_completed_successfully
+    networks:
+      - oidc-net
+
+  consent-ui:
+    image: oryd/hydra-login-consent-node:v2.2.0
+    ports:
+      - "3000:3000"
+    environment:
+      - HYDRA_ADMIN_URL=http://hydra:4445
+      - NODE_TLS_REJECT_UNAUTHORIZED=0
+    networks:
+      - oidc-net
+
+  # ==========================================
+  # LDAP INFRASTRUCTURE
+  # ==========================================
+  openldap:
+    image: osixia/openldap:1.5.0
+    ports:
+      - "389:389"
+      - "636:636"
+    environment:
+      LDAP_ORGANISATION: "Demo Org"
+      LDAP_DOMAIN: "example.org"
+      LDAP_ADMIN_PASSWORD: ${LDAP_ADMIN_PASSWORD}
+    networks:
+      - oidc-net
+
+networks:
+  oidc-net:
+    driver: bridge
